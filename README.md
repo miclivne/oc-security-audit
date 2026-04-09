@@ -147,7 +147,11 @@ Safe for review by Gen Trust Hub, Socket, and Snyk.
 
 ## Legal disclaimer
 
-Do not run against systems you do not own or have written permission to test. Authors not responsible for misuse. A passing audit does not guarantee absence of vulnerabilities.
+This skill is provided as-is, for informational purposes only. It does not constitute security advice, and its output should not be treated as a professional security assessment. A passing audit does not guarantee the absence of vulnerabilities.
+
+The security of your project is solely the responsibility of the project owner and builders. The authors of this skill are not responsible for any security issues, breaches, damages, or losses that may arise from the use or misuse of this tool, or from acting (or failing to act) on its output.
+
+Do not run against systems you do not own or have written permission to test.
 
 This skill sends GET/HEAD requests to your production domain to check security headers, exposed files, and error handling behavior. These are lightweight, non-destructive requests equivalent to loading your site in a browser. No exploitation, brute-forcing, or load testing is performed.
 
