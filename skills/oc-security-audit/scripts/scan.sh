@@ -30,11 +30,15 @@ AI_SDK="${OC_AI_SDK:-none}"
 # ============================================================
 # D. Pattern sourcing via companion .patterns.sh file
 # ============================================================
-PATTERNS_FILE="$SKILL_DIR/profiles/${PROFILE}.patterns.sh"
-# WHY: Source patterns from a shell file, NOT eval from markdown.
-# ERE patterns contain (, ), {, } which eval would interpret as shell code.
-# shellcheck source=/dev/null
-. "$PATTERNS_FILE" 2>/dev/null || { echo "ERROR: patterns file not found: $PATTERNS_FILE"; exit 1; }
+# WHY: If the profile is unsupported, skip pattern sourcing entirely.
+# Generic checks don't need profile-specific grep patterns.
+if [ "$PROFILE" != "unsupported" ]; then
+  PATTERNS_FILE="$SKILL_DIR/profiles/${PROFILE}.patterns.sh"
+  # WHY: Source patterns from a shell file, NOT eval from markdown.
+  # ERE patterns contain (, ), {, } which eval would interpret as shell code.
+  # shellcheck source=/dev/null
+  . "$PATTERNS_FILE" 2>/dev/null || { echo "ERROR: patterns file not found: $PATTERNS_FILE"; exit 1; }
+fi
 
 # ============================================================
 # E. Counters and emit_row helper
@@ -118,38 +122,48 @@ fi
 # ============================================================
 # F. Profile-driven check list
 # ============================================================
-PROFILE_FILE="$SKILL_DIR/profiles/${PROFILE}.md"
-if [ ! -f "$PROFILE_FILE" ]; then
-  echo "ERROR: Profile not found: $PROFILE_FILE"
-  exit 1
+if [ "$PROFILE" = "unsupported" ]; then
+  # WHY: When no profile exists for this stack, run only generic stack-independent
+  # checks that don't require framework-specific grep patterns.
+  # These checks use curl, dig, npm audit, and file existence — no code pattern matching.
+  echo "PROFILE: unsupported — running stack-independent checks only"
+  echo "WILL_CHECK: security headers, TLS, exposed files, DNS, npm audit, secrets, Docker config, error handling, admin paths, HTTP methods"
+  echo "WONT_CHECK: auth per route, rate limiting, code injection escape hatches, session config, LLM judgments"
+  ALL_CHECKS="CONF-04 CONF-05 CONF-06 CONF-07 CONF-09 CONF-12 CONF-14 CRYP-01 ERRH-01 ERRH-02 DNS-01 DNS-02 DNS-03 SUPPLY-01 SUPPLY-02"
+else
+  PROFILE_FILE="$SKILL_DIR/profiles/${PROFILE}.md"
+  if [ ! -f "$PROFILE_FILE" ]; then
+    echo "ERROR: Profile not found: $PROFILE_FILE"
+    exit 1
+  fi
+
+  # WHY: Extract all WSTG IDs marked RUN (script) from the profile.
+  # The profile is the single source of truth for which checks to execute.
+  # Format: | WSTG-ID | Test name | RUN (script) | ... |
+  # Extract first column only (between first two pipes) to avoid matching
+  # text like "S3" in method descriptions.
+  RUN_CHECKS=$(grep -E 'RUN \(script\)' "$PROFILE_FILE" \
+    | sed -E 's/^\|([^|]+)\|.*/\1/' \
+    | grep -oE '[A-Z]+-[A-Z0-9]+|[A-Z]+[0-9]+' \
+    | grep -vE '^JUDGMENT' \
+    | sort -u)
+
+  # WHY: Also extract RUN (escape-hatch) checks — framework escape hatches that still run
+  ESCAPE_CHECKS_LIST=$(grep -E 'RUN \(escape-hatch\)' "$PROFILE_FILE" \
+    | sed -E 's/^\|([^|]+)\|.*/\1/' \
+    | grep -oE '[A-Z]+-[A-Z0-9]+|[A-Z]+[0-9]+' \
+    | sort -u)
+
+  # WHY: Also extract RUN (conditional) checks — they run if their condition is met
+  CONDITIONAL_CHECKS=$(grep -E 'RUN \(conditional\)' "$PROFILE_FILE" \
+    | sed -E 's/^\|([^|]+)\|.*/\1/' \
+    | grep -oE '[A-Z]+-[A-Z0-9]+|[A-Z]+[0-9]+' \
+    | grep -vE '^JUDGMENT' \
+    | sort -u)
+
+  # WHY: Merge all script-executable checks into one list for dispatch
+  ALL_CHECKS=$(echo -e "${RUN_CHECKS}\n${ESCAPE_CHECKS_LIST}\n${CONDITIONAL_CHECKS}" | grep -v '^$' | sort -u)
 fi
-
-# WHY: Extract all WSTG IDs marked RUN (script) from the profile.
-# The profile is the single source of truth for which checks to execute.
-# Format: | WSTG-ID | Test name | RUN (script) | ... |
-# Extract first column only (between first two pipes) to avoid matching
-# text like "S3" in method descriptions.
-RUN_CHECKS=$(grep -E 'RUN \(script\)' "$PROFILE_FILE" \
-  | sed -E 's/^\|([^|]+)\|.*/\1/' \
-  | grep -oE '[A-Z]+-[A-Z0-9]+|[A-Z]+[0-9]+' \
-  | grep -vE '^JUDGMENT' \
-  | sort -u)
-
-# WHY: Also extract RUN (escape-hatch) checks — framework escape hatches that still run
-ESCAPE_CHECKS_LIST=$(grep -E 'RUN \(escape-hatch\)' "$PROFILE_FILE" \
-  | sed -E 's/^\|([^|]+)\|.*/\1/' \
-  | grep -oE '[A-Z]+-[A-Z0-9]+|[A-Z]+[0-9]+' \
-  | sort -u)
-
-# WHY: Also extract RUN (conditional) checks — they run if their condition is met
-CONDITIONAL_CHECKS=$(grep -E 'RUN \(conditional\)' "$PROFILE_FILE" \
-  | sed -E 's/^\|([^|]+)\|.*/\1/' \
-  | grep -oE '[A-Z]+-[A-Z0-9]+|[A-Z]+[0-9]+' \
-  | grep -vE '^JUDGMENT' \
-  | sort -u)
-
-# WHY: Merge all script-executable checks into one list for dispatch
-ALL_CHECKS=$(echo -e "${RUN_CHECKS}\n${ESCAPE_CHECKS_LIST}\n${CONDITIONAL_CHECKS}" | grep -v '^$' | sort -u)
 
 # ============================================================
 # G. Helper functions

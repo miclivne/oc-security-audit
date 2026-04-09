@@ -42,7 +42,7 @@ The audit runs in 6 steps with progress indicators:
 
 ```
 Step 1: DISCOVER              Step 2: SELECT TESTS         Step 3: SCAN
-(~1K tokens)                  (~1K tokens)                 (0 LLM tokens)
+[shell script]                [shell script]               [shell script]
 
 discover.sh                   Read profile, count:         scan.sh
   - Detect framework            - 66 test types to run       - Profile-driven dispatch
@@ -53,7 +53,7 @@ discover.sh                   Read profile, count:         scan.sh
   - Detect features               /security-review           - Output TOTALS + Audit Details
 
 Step 4: ANALYZE               Step 5: REPORT               Step 6: CLOSE
-(~10K tokens)                 (~15K tokens)                 (~1K tokens)
+[LLM]                         [LLM]                        [LLM]
 
 LLM reads route files         Positive-first report:       Remind about /security-review
   for 8 judgment calls:         1. What's secure            Offer to save report
@@ -65,7 +65,7 @@ LLM reads route files         Positive-first report:       Remind about /securit
   - Workflow bypass
 ```
 
-**Total: ~28K tokens.** Steps 1-3 use zero LLM tokens -- all work is done by shell scripts. The LLM only activates in Steps 4-6 to read code for judgment calls and write the report.
+**Lightweight — shell scripts handle mechanical checks, LLM only activates for judgment calls and report writing.** Steps 1-3 use zero LLM tokens. Token usage varies by model and project size.
 
 ### Profile-driven execution (v2.2 architecture)
 
@@ -79,7 +79,7 @@ Running the full OWASP book through an LLM (e.g., via Candlekeep) works but is e
 
 | | Candlekeep + OWASP book | This skill |
 |---|---|---|
-| Token cost | 100K+ (LLM does everything) | ~28K (scripts handle mechanical checks) |
+| Token cost | High (LLM does everything) | Lightweight (scripts handle mechanical checks) |
 | Consistency | Varies per run | Repeatable (scripts are deterministic) |
 | Stack awareness | Generic | Profile filters irrelevant checks per stack |
 | Production testing | No | Yes -- curls your live domain |

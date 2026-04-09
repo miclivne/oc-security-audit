@@ -32,6 +32,17 @@ If `PROFILE` is `unsupported`, tell the user that only stack-independent checks 
 
 ## Step 2: Select tests
 
+If `PROFILE` is `unsupported`, skip reading the profile file. Instead print:
+
+**`[Step 2/6]` Profile: unsupported — only stack-independent checks will run**
+✅ Will check: security headers, TLS, exposed files, DNS, npm audit, secrets, Docker config
+⚠️ Won't check: auth per route, rate limiting, code injection escape hatches, session config, LLM judgments
+ℹ️ Want full coverage? Open an issue to request your stack: https://github.com/miclivne/oc-security-audit/issues
+
+Then skip Step 4 (LLM judgment calls) — there is no profile to read judgment calls from.
+
+If `PROFILE` is NOT `unsupported`, proceed normally:
+
 Print: **`[Step 2/6]` Selecting tests for {PROFILE} profile...**
 
 Read `profiles/{PROFILE}.md` and count the decisions:
@@ -70,6 +81,11 @@ OC_PROFILE={profile} OC_SRC_ROOT={src_root} OC_PROJECT_ROOT={project_root} OC_DO
 After scan completes, print: **`[Step 3/6]` Done — {TOTAL} individual checks run across {RUN_SCRIPT} test types ({PASS} pass, {WARN} warn, {FAIL} fail)**
 
 ## Step 4: Analyze
+
+If `PROFILE` is `unsupported`, skip this step entirely. Print:
+**`[Step 4/6]` Skipped — no profile-specific judgment calls for unsupported stacks**
+
+Otherwise:
 
 Print: **`[Step 4/6]` Reading code for judgment calls — IDOR, privilege escalation, data exposure...**
 
