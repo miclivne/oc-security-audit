@@ -1,0 +1,8 @@
+{
+  "name": "oc-security-audit",
+  "description": "Pre-launch security audit for web apps. Runs OWASP checks via shell scripts, then AI analyzes findings. Covers rate limiting, hosting bypass, data exposure, headers, session security, AI risks.",
+  "version": "2.2.0",
+  "author": {
+    "name": "Michal Aharonson"
+  }
+}

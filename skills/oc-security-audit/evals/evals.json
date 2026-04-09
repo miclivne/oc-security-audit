@@ -1,0 +1,128 @@
+{
+  "skill_name": "oc-security-audit",
+  "version": "2.2",
+  "evals": [
+    {
+      "id": 1,
+      "name": "standard-audit",
+      "prompt": "run a security audit on this project",
+      "expected_output": "Full v2.2 security audit report with 6-step progress, positive-first structure, severity-tagged issues, and script-computed Audit Details",
+      "files": [],
+      "expectations": {
+        "step_1_discover": [
+          "discover.sh runs and exits 0",
+          "Profile detected as nextjs-prisma",
+          "Domain detected as swayzi.co (not yourdomain.com or unknown)",
+          "12 API routes discovered",
+          "FILE_UPLOADS: yes detected",
+          "AI_SDK detected",
+          "Step 1 progress message printed: [Step 1/6]",
+          "Step 1 done message includes framework + ORM + route count + domain"
+        ],
+        "step_2_select": [
+          "Step 2 progress message printed: [Step 2/6]",
+          "Test selection summary shows total OWASP test cases",
+          "Shows how many test types will run (script checks)",
+          "Shows how many judgment calls (LLM)",
+          "Shows how many skipped with reason",
+          "Shows how many deferred"
+        ],
+        "step_3_scan": [
+          "scan.sh runs and exits 0",
+          "TOTALS line present with pass/warn/fail",
+          "TOTALS pass + warn + fail = total checks",
+          "TOTALS pass count matches actual PASS rows",
+          "TOTALS warn count matches actual WARN rows",
+          "TOTALS fail count matches actual FAIL rows",
+          "AUDIT_DETAILS table present after TOTALS",
+          "AUDIT_DETAILS category rows sum to same total as TOTALS",
+          "No NOT IMPLEMENTED FAIL rows in output",
+          "Step 3 done message includes total checks and pass/warn/fail breakdown"
+        ],
+        "step_4_analyze": [
+          "Step 4 progress message printed: [Step 4/6]",
+          "Profile judgment calls section is read",
+          "Route files are read for judgment analysis",
+          "Judgment results are NOT printed as a separate list",
+          "Step 4 done message shows number of judgment calls completed"
+        ],
+        "step_5_report_structure": [
+          "Report starts with header including date and profile name",
+          "Project Profile table present with framework, ORM, auth, hosting, domain",
+          "What's secure section appears BEFORE Executive Summary",
+          "What's secure includes categories that pass via LLM judgment (IDOR, privilege escalation)",
+          "What's secure is generous — includes categories with minor WARNs",
+          "Executive Summary present with posture emoji",
+          "Executive Summary shows exact pass/warn/fail numbers from TOTALS",
+          "Executive Summary shows distinct findings count and affected categories count",
+          "What needs attention section present with issues grouped by category",
+          "Audit Details table at end copies verbatim from scan.sh AUDIT_DETAILS output",
+          "Skip count and defer count summary lines present at end",
+          "Report ends with /security-review reminder"
+        ],
+        "step_5_report_issues": [
+          "Issues have severity tags: red circle for FIX, yellow for INVESTIGATE, green for MONITOR/ACCEPT",
+          "Issues are ordered by priority (FIX categories first, then INVESTIGATE, then MONITOR/ACCEPT)",
+          "Each FIX/INVESTIGATE issue has all 7 sections: WSTG Reference, Threat, What's wrong, What could happen, What could go wrong when fixing, How others solve this, Recommended action",
+          "What could go wrong when fixing names specific risks (not generic statements)",
+          "Related findings are grouped (e.g., 9 rate limiting WARNs = 1 issue)",
+          "Unrelated findings are NOT grouped together",
+          "False positives noted as ACCEPT with brief explanation (not full 7-section blocks)",
+          "No raw 110-row Findings tables in report body"
+        ],
+        "step_5_report_correctness": [
+          "WSTG IDs are correct: ATHZ-02 (not ATHZ-01), INPV-11 (not INPV-03), INPV-20 (not INPV-06), DOS-03 (not DOS-02), PRIV-01 (not IDNT-01)",
+          "Audit Details table numbers match the script-computed table exactly",
+          "Issue count in Executive Summary matches actual number of issue blocks written",
+          "Category count in Executive Summary matches number of category headings in What needs attention"
+        ],
+        "step_6_close": [
+          "Step 6 progress message printed: [Step 6/6]",
+          "Reminder about /security-review for deep code analysis",
+          "Offers to save report to file"
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "name": "specific-concern",
+      "prompt": "I'm about to launch this app publicly. Can you check if there are any security issues with my API routes and whether my production headers are set up correctly?",
+      "expected_output": "Full audit covering ALL categories despite user asking about a subset",
+      "files": [],
+      "expectations": {
+        "completeness": [
+          "discover.sh runs and detects nextjs-prisma profile",
+          "Full audit covers ALL categories, not just API routes and headers",
+          "What's secure section includes non-API categories (code injection, SSRF, error handling)",
+          "Issues cover infrastructure config, privacy/legal, logging — not just what user asked about"
+        ],
+        "format": [
+          "6-step progress indicators present",
+          "Issues have severity tags",
+          "Audit Details table present with correct numbers",
+          "No raw Findings tables in body"
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "name": "minimal-prompt",
+      "prompt": "check security",
+      "expected_output": "Skill triggers and runs full audit despite minimal prompt",
+      "files": [],
+      "expectations": {
+        "triggering": [
+          "The skill triggers — discover.sh is invoked",
+          "scan.sh runs and produces TOTALS line",
+          "Full 6-step process executes"
+        ],
+        "output": [
+          "What's secure section present",
+          "Executive Summary with numbers present",
+          "Audit Details table at end",
+          "Issues with severity tags"
+        ]
+      }
+    }
+  ]
+}
