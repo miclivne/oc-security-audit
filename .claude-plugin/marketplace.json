@@ -1,0 +1,17 @@
+{
+  "name": "oc-security-audit",
+  "owner": {
+    "name": "Michal Aharonson"
+  },
+  "plugins": [
+    {
+      "name": "oc-security-audit",
+      "source": "./plugins/oc-security-audit",
+      "description": "Pre-launch security audit for web apps. Runs OWASP checks via shell scripts, then AI analyzes findings.",
+      "version": "2.2.0",
+      "category": "security",
+      "tags": ["security", "owasp", "audit", "pre-launch"],
+      "license": "MIT"
+    }
+  ]
+}
