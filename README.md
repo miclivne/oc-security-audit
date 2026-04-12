@@ -73,19 +73,6 @@ The profile (`profiles/nextjs-prisma.md`) is the single source of truth. It decl
 
 This follows industry-standard patterns used by OWASP ZAP, Nessus, and Checkov -- the profile drives execution, not hardcoded check lists.
 
-## How this differs from Candlekeep + OWASP
-
-Running the full OWASP book through an LLM (e.g., via Candlekeep) works but is expensive and inconsistent. This skill splits the work: deterministic shell scripts handle mechanical checks, and the LLM handles only the judgment calls that require reading code and reasoning.
-
-| | Candlekeep + OWASP book | This skill |
-|---|---|---|
-| Token cost | High (LLM does everything) | Lightweight (scripts handle mechanical checks) |
-| Consistency | Varies per run | Repeatable (scripts are deterministic) |
-| Stack awareness | Generic | Profile filters irrelevant checks per stack |
-| Production testing | No | Yes -- curls your live domain |
-| Report format | Unstructured | Positive-first, severity-tagged, with "what could go wrong when fixing" |
-| Numbers accuracy | LLM counts (error-prone) | Script-computed (exact) |
-
 ## Report structure
 
 The report leads with the positive and uses clear severity tags:
