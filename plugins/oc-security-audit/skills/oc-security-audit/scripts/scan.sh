@@ -191,7 +191,7 @@ else
     | sort -u)
 
   # WHY: Merge all script-executable checks into one list for dispatch
-  ALL_CHECKS=$(echo -e "${RUN_CHECKS}\n${ESCAPE_CHECKS_LIST}\n${CONDITIONAL_CHECKS}" | grep -v '^$' | sort -u)
+  ALL_CHECKS=$(printf '%s\n%s\n%s\n' "${RUN_CHECKS}" "${ESCAPE_CHECKS_LIST}" "${CONDITIONAL_CHECKS}" | grep -v '^$' | sort -u)
 fi
 
 # ============================================================
@@ -755,7 +755,9 @@ check_athz_02() {
     else
       emit_row "ATHZ-02" "Auth: $ROUTE_PATH" "PASS" "auth=no GET-only methods=$ROUTE_METHODS"
     fi
-  done <<< "$ROUTE_LINES"
+  done <<EOF
+$ROUTE_LINES
+EOF
 }
 
 # --- WSTG-INPV: Input Validation ---
@@ -962,7 +964,9 @@ check_dos_01() {
     else
       emit_row "DOS-01" "Rate limit: $ROUTE_PATH" "WARN" "No rate limiting detected"
     fi
-  done <<< "$ROUTE_LINES"
+  done <<EOF
+$ROUTE_LINES
+EOF
 }
 
 check_dos_03() {
@@ -1186,7 +1190,9 @@ check_llm10() {
         fi
       fi
     fi
-  done <<< "$ROUTE_LINES"
+  done <<EOF
+$ROUTE_LINES
+EOF
 }
 
 # WHY: LLM07 (system prompt leakage) — only if AI SDK detected
