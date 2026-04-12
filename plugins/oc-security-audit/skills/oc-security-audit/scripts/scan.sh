@@ -232,7 +232,7 @@ discover_routes() {
         HAS_RATE_LIMIT="yes"
       fi
 
-      METHODS=$(grep -oE 'export.*async.*function.*(GET|POST|PUT|PATCH|DELETE|OPTIONS)' "$route_file" 2>/dev/null | grep -oE 'GET\|POST\|PUT\|PATCH\|DELETE\|OPTIONS' | tr '\n' ',' | sed 's/,$//' || echo "unknown")
+      METHODS=$(grep -oE 'export.*async.*function.*(GET|POST|PUT|PATCH|DELETE|OPTIONS)' "$route_file" 2>/dev/null | grep -oE 'GET|POST|PUT|PATCH|DELETE|OPTIONS' | tr '\n' ',' | sed 's/,$//' || echo "unknown")
       [ -z "$METHODS" ] && METHODS="unknown"
 
       ROUTE_LINES="${ROUTE_LINES}ROUTE: /api${API_PATH} | methods=${METHODS} | auth=${HAS_AUTH} | rate_limit=${HAS_RATE_LIMIT} | file=${route_file}

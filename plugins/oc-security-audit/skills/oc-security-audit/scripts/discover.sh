@@ -324,7 +324,7 @@ if [ "$FRAMEWORK" = "nextjs" ]; then
 
         # CHECK: What HTTP methods does this route export?
         # WHY: Extract exported HTTP method names to map the API surface
-        METHODS=$(grep -oE 'export.*async.*function.*(GET|POST|PUT|PATCH|DELETE|OPTIONS)' "$route_file" 2>/dev/null | grep -oE 'GET\|POST\|PUT\|PATCH\|DELETE\|OPTIONS' | tr '\n' ',' | sed 's/,$//' || true)
+        METHODS=$(grep -oE 'export.*async.*function.*(GET|POST|PUT|PATCH|DELETE|OPTIONS)' "$route_file" 2>/dev/null | grep -oE 'GET|POST|PUT|PATCH|DELETE|OPTIONS' | tr '\n' ',' | sed 's/,$//' || true)
         [ -z "$METHODS" ] && METHODS="unknown"
 
         echo "ROUTE: /api${API_PATH} | methods=${METHODS} | auth=${HAS_AUTH} | rate_limit=${HAS_RATE_LIMIT} | file=${route_file}"
