@@ -1,0 +1,12 @@
+{
+  "name": "fixture-nextjs-prisma",
+  "version": "1.0.0",
+  "dependencies": {
+    "next": "14.2.0",
+    "@prisma/client": "5.0.0",
+    "zod": "3.22.0",
+    "better-auth": "1.0.0",
+    "ai": "3.0.0",
+    "@ai-sdk/openai": "0.1.0"
+  }
+}
