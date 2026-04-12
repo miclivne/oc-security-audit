@@ -38,7 +38,7 @@ check "SKILL.md has allowed-tools field" "grep -q '^allowed-tools:' '$SKILL_DIR/
 check "SKILL.md under 500 lines" "[ \$(wc -l < '$SKILL_DIR/SKILL.md') -lt 500 ]"
 check "No Write in allowed-tools" "! grep 'allowed-tools' '$SKILL_DIR/SKILL.md' | grep -q 'Write'"
 check "marketplace.json exists" "[ -f '$REPO_ROOT/.claude-plugin/marketplace.json' ]"
-check "marketplace.json is valid JSON" "python3 -c \"import json; json.load(open('$REPO_ROOT/.claude-plugin/marketplace.json'))\""
+check "marketplace.json is valid JSON" "node -e \"JSON.parse(require('fs').readFileSync('$REPO_ROOT/.claude-plugin/marketplace.json','utf8'))\""
 check "plugin.json exists" "[ -f '$SKILL_DIR/../../.claude-plugin/plugin.json' ]"
 check "discover.sh exists and executable" "[ -x '$SKILL_DIR/scripts/discover.sh' ]"
 check "scan.sh exists and executable" "[ -x '$SKILL_DIR/scripts/scan.sh' ]"
