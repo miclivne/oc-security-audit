@@ -5,7 +5,7 @@
 ## Install
 
 ```bash
-/plugin marketplace add michalaharonson/oc-security-audit
+/plugin marketplace add miclivne/oc-security-audit
 /plugin install oc-security-audit
 ```
 
